@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<title>Octagon - Part 3. </title>
+	<link rel="stylesheet" type="text/css" href="../libs/style.css">
+	<script src="../libs/run_prettify.js?autoload=true&amp;lang=css" defer=""></script>
+	<script type = "text/javascript" src = "../libs/dat.gui.js"></script>
+	<script src="../libs/WebGeometry.js"></script>
+	<script src="../libs/canvas2D.js"></script>
+	<script src = "../libs/polyhedron_canvas.js"></script>
+	<script src = "octagon_verts.js"></script>
+	<script src="octagon3.js"></script>
+
+	<style>
+		div.out
+		{
+			position: relative;
+			width: 780px;
+			height: 412px;
+			left: 5px;
+			background-color: #aaffff;
+			border: solid 2px;
+		}
+	
+		div.in
+		{
+			position: absolute;
+			left: 510px;
+			top: 5px;			
+			height: 230px;
+			width: 265px;
+			background-color: #eeeeee;
+			border: solid 1px;
+		}
+
+		div.canvas
+		{
+			position: absolute;
+			left: 5px;
+			top: 5px;			
+			height: 400px;
+			width: 500px;
+			background-color: #fcffff;
+			border: solid 0px;		
+		}
+		
+		div.gui
+		{
+			position: absolute;
+			left: 5px;
+			top: 5px;
+		}	
+	</style>
+
+<script>
+
+	var DEGREE = 0.01745329251994;
+	var xC, yC, SCALE;
+		
+	function initiate()		
+	{
+		octagon();
+	}
+	
+addEventListener("load", initiate);
+</script>
+
+</head>
+
+<body oncontextmenu="return false">
+
+<h4 align = "center">&emsp;&emsp;
+<a href="../Octagon/Octagon2.html"> <span class=purple>Многогранник октагон.&emsp;Часть &#8545;.</span></a>  <span class=purple>&ensp;◄</span>
+&emsp;&emsp;&emsp;
+<a href="../index.html"> <span class=purple> Содержание  </span></a>
+&emsp;&emsp;&emsp;
+ <span class=purple>► &ensp;</span></a><a href="../Brilliant/Brilliant.html"> <span class=purple> Классический бриллиант  </span></a>
+</h4>
+<br>
+<h2 align = "center"> Многогранник октагон. &emsp; Часть &#8546;. </h2>
+<h3 align = "center"> <em><span class=purple>Имитация освещения модели</span></em> </h3>
+<p>
+Простейшая модель освещения - чисто диффузное освещение. Считается, что свет падающий в точку, 
+одинаково рассеивается по всем направлением. Освещенность в точке определяется только плотностью света 
+в точке поверхности, а она линейно зависит от косинуса угла падения. Если многоугольник направлен прямо на свет
+(перпендикулярно световому потоку), то он становится максимально ярким. 
+Как только он отворачивается от света, то он становится все темнее и темнее. 
+Наконец, когда он обращен в противоположную сторону от источника света, он полностью в тени и окрашен в черный цвет.
+</p>
+
+<p>
+Предположим, что нашу модель освещает свет распространяющийся <em>параллельно</em> оси Z.
+Для задания такого света вводится вектор
+<br> 
+&emsp;&emsp; <code>var lightVector = new Vector3D(0.0, 0.0, 1.0);</code>
+<br>
+Для включения света необходимо поставить "галочку" в панели <b>GUI</b> в поле <b>lighting</b>. 
+После того как освещение включено появится возможность задать цвет падающего на модель
+света и его яркость. Яркость изменяется в пределах от <b>0.0</b> до <b>1.0</b>. Если выйти за пределы 
+этого диапазона, то можно получить некоторые странные результаты, но они не будут корректными.
+Для регулировки прозрачности модели используется свойство холста <code>globalAlpha</code>. 
+Это число лежащее между <b>0.0</b> (полная прозрачность) и <b>1.0</b> (полная непрозрачность), включительно.
+</p>
+
+<div class="out">  
+	<div class="canvas">
+		<canvas id="canvas_draw" width="500" height="400" style="border: 1px solid"></canvas>
+	</div>
+	<div class="in">
+		<div class="gui" id="gui_container" ></div> 
+	</div>	
+</div>
+
+<p>
+Рассмотрим изменения, которые следует ввести в функцию <code>draw</code> отображающую модель на холст
+при освещении объекта (изменения в исходном тексте функции показаны другим цветом):
+</p>
+<pre class="prettyprint" id="quine">
+
+function draw()
+{	
+	ctx.clearRect(0, 0, elem.width, elem.height);
+	
+	facet_colors(); // задание цвета граней
+	
+	// Расчет поворотов модели
+	var matX = new Matrix3D(); 
+	matX.RotX(angleX); 
+	
+	var matY = new Matrix3D(); 
+	matY.RotY(angleY);
+	
+	var matZ = new Matrix3D(); 
+	matZ.RotZ(angleZ);	
+	
+	var i, j;
+	
+	// Отрисовка модели на холсте - ребра и грани
+	for (i = 0; i < plgs.length; i++) // цикл по всем граням модели
+	{
+		for (j = 0; j < plgs[i].vertexes.length; j++) // цикл по всем вершинам грани
+		{   
+			plgs[i].vertexes[j][0] = scale_controller * plgs[i].vertexes[j][0];
+			plgs[i].vertexes[j][1] = scale_controller * plgs[i].vertexes[j][1];
+			plgs[i].vertexes[j][2] = scale_controller * plgs[i].vertexes[j][2];
+			
+			plgs[i].vertexes[j] = plgs[i].vertexes[j].Rotate(matX);
+			plgs[i].vertexes[j] = plgs[i].vertexes[j].Rotate(matY);
+			plgs[i].vertexes[j] = plgs[i].vertexes[j].Rotate(matZ);
+		}
+		
+		// Первые три точки каждого многоугольника используются для создания двух 3D-векторов.
+		var pt0 = new Point3D(plgs[i].vertexes[0][0], plgs[i].vertexes[0][1], plgs[i].vertexes[0][2]);
+		var pt1 = new Point3D(plgs[i].vertexes[1][0], plgs[i].vertexes[1][1], plgs[i].vertexes[1][2]);
+		var pt2 = new Point3D(plgs[i].vertexes[2][0], plgs[i].vertexes[2][1], plgs[i].vertexes[2][2]);
+		
+		// Два 3D-вектора
+		var vec1 = new Vector3D(pt1[0] - pt0[0], pt1[1] - pt0[1], pt1[02] - pt0[2]);
+		var vec2 = new Vector3D(pt2[0] - pt0[0], pt2[1] - pt0[1], pt2[02] - pt0[2]);
+		// Векторное произведение - нормаль грани
+		var vecNormal = vec1.Cross(vec2); 
+		
+		if (vecNormal[2] >= 0) // По направлению нормали определяем  
+		{                      // передние и задние грани модели
+<p style="background-color: #BBAAFF">
+			if (lighting == true)
+			{
+				// освещение включено (lighting = true)
+				vecNormal.Normer();
+				// scal - косинус угла между векторами lightVector и vecNormal
+				var scal = lightVector.Dot(vecNormal);
+				// lightFactor - яркость грани
+				var lightFactor = brightness * scal;
+				
+				// От цвета отбрасываем решетку # ( #eeeeff => eeeeff )
+				var tcol = color.slice(1);
+				// col - целое число в системе счисления с основанием 16
+				var col = parseInt(tcol, 16);
+				
+				// Новые  R, G, B - компоненты цвета с учетом lightFactor
+				var red = (col >> 16) * lightFactor;
+				var green = (col >> 8 & 0xff) * lightFactor;
+				var blue = (col & 0xff) * lightFactor;
+				
+				// Формируем строку соответствующую новому цвету 
+				col = '#' + ('00000' + ((red << 16 | green << 8 | blue) | 0).toString(16)).substr(-6);
+				
+				//  Рисуем многоугольник без окаймления. Для этого четвертый по счету 
+				// параметр width передаваемый в функцию задаем равным меньше нуля (-1).
+				draw_polygon(ctx, plgs[i].vertexes, -1, col, col);
+			}
+</p>			
+			else
+			{
+				// освещение выключено (lighting = false) 
+				// рисуем грани и ребра на внешней части модели когда освещение отсутствует
+				draw_polygon(ctx, plgs[i].vertexes, 1, "Black", colors[i]);  
+			}
+			
+			if (enumeration == true) // Производим нумерацию передних граней модели
+			{
+				var ind_facets = plgs[i].IndexFacet;
+				for(j = 0; j < plgs[i].vertexes.length; j++)
+				{
+					var num_vertex = ind_facets[j];
+					// Для вывода номеров грани на холст используем функцию text из файла canvas2D
+					var vertex_enum = roundNumber(num_vertex, 2);
+					text(ctx, vertex_enum, plgs[i].vertexes[j], "lt", "dn", "B", "12px Arial");
+				}
+			}
+
+			if (x_coord > -100) //  Удостоверяемся, что мышь получила 
+			{					// какие-то координаты при перемещении по холсту
+								// и только в этом случае следует создать точку point_test
+				// point_test - координаты курсора мыши в системе координат WebGeomtry
+				var point_test = new Point3D(x_coord, y_coord);
+				var rez = PointInPolygon(point_test, i); // курсор мыши находится на на грани модели ???
+				if (rez == true)
+				{
+					index = i; // номер грани на которой находится курсор мыши
+					var index_text = "Facet = " + roundNumber(index, 3);
+					// номер грани на которой находится курсор мыши отображаем цветом rgb(255, 0, 151)
+					ctx.fillStyle = "rgb(255, 0, 151)";
+					ctx.fillText(index_text, 30, 40);
+					ctx.fillStyle = "#00F"; // устанавливаем исходный цвет
+					
+					// Обводим ребра выделенной грани цветом rgb(255, 0, 151)
+					if (lighting == true)
+					{
+						draw_polygon_line(ctx, plgs[index].vertexes, 1, "rgb(255, 0, 151)", "B");
+					}
+					else
+					{
+						draw_polygon_line(ctx, plgs[index].vertexes, 3, "rgb(255, 0, 151)", "B");
+					}
+					
+					// Отображаем значения координат именно той точки грани (!!!) на которой находится курсор мыши
+					var x_text = roundNumber(x_intersect_facet, 3);
+					var y_text = roundNumber(y_intersect_facet, 3);
+					var z_text = roundNumber(z_intersect_facet, 3);
+					var xyz_text = "x, y, z = (" + x_text + ", " + y_text + ", " + z_text + ")";
+					ctx.fillText(xyz_text, 20, 20);
+				}
+				else
+				{	
+					index = -1; // курсор мыши НЕ находится на на грани модели
+				}
+			}
+		}	
+	}
+</pre>
+
+&emsp;&emsp; Вышеприведенный вариант функции <code>draw</code> будет использован при создании <b><em>всех последующих моделей</em></b>.
+<p>
+В <a href="../Brilliant/Brilliant.html"><b>следующем разделе</b></a> будет рассмотрена модель классического бриллианта.
+</p>
+
+
+</body>
+</html>

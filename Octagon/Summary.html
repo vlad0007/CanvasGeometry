@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<title>Summary</title>
+	<link rel="stylesheet" type="text/css" href="../libs/style.css">
+	<script src="../libs/run_prettify.js?autoload=true&amp;lang=css" defer=""></script>
+
+	<style>
+		div.out
+		{
+			position: relative;
+			width: 510px;
+			height: 412px;
+			left: 20px;
+			background-color: #aaffff;
+			border: solid 2px;
+		}
+
+		div.canvas
+		{
+			position: absolute;
+			left: 5px;
+			top: 5px;			
+			height: 400px;
+			width: 500px;
+			background-color: #fcffff;
+			border: solid 0px;		
+		}
+	</style>
+
+<script>
+
+	var DEGREE = 0.01745329251994;
+	var xC, yC, SCALE;
+		
+	function initiate()		
+	{
+		octagon();
+	}
+	
+addEventListener("load", initiate);
+</script>
+
+</head>
+
+<body>
+
+<h4 align = "center">&emsp;&emsp;
+<a href="../Princess/Princess.html"> <span class=purple>Принцесса &nbsp; (Princess3s on the cushion)</span></a>  <span class=purple>&ensp;◄</span>
+&emsp;&emsp;&emsp;
+<a href="../index.html"> <span class=purple> Содержание  </span></a>
+&emsp;&emsp;&emsp;
+ <span class=purple>► &ensp;</span></a><a href="../libs/Canvas2d_Reference.html"><span class=purple>Справочник по функциям canvas2D</span></a>
+</h4>
+
+
+<h2 align = "center">Заключение</h2>
+
+<p>
+Что можно посмотреть на <b>Web</b>-страницах других моих сайтов:
+
+</p>
+
+<p>
+На сайте <b><a href="https://vlad0007.github.io/polyhedron2/index.html" target="_blank">
+Three.js и геометрия</a></b> все <b>16</b> моделей многогранников расчитаны с помощью библиотеки
+<b>WebGeometry</b> (так же как и на текущем сайте), но отображены они на холст с помощью <b>ThreeJS</b>.
+</p>
+
+<p>
+На сайте <b><a href="https://vlad0007.github.io" target="_blank">
+Diamond Cuts</a></b> модели <b>7</b> многогранников также расчитаны спомощью библиотеки
+<b>WebGeometry</b> и отображены на холст с помощью <b>ThreeJS</b>. При этом используется
+несколько типов шейдеров и кубические текстуры.
+</p>
+
+<p>
+На сайте
+<b><a href="http://diamond3d.ucoz.ru/" target="_blank">
+Diamond Cuts Collection</a></b> можно найти множество моделей различных многогранников.
+При определении координат вершин всех этих моделей координаты предварительно расчитывались на <b>Visual C++</b>
+и их значения <em>записывались в файлы</em>. Эти файлы с сохраненными в них значениями координат используются 
+в программах отображения моделей на экран (<b>ThreeJS</b> и <b>API WebGL</b>).
+
+<br><br>
+&nbsp;&nbsp;На страницах 
+<b><a href="http://diamond3d.ucoz.ru/Shine/Shine.html" target="_blank">
+Shine on You Crazy Diamond !</a></b> вышеназванного сайта можно под музыку
+двигаться по сцене и рассматривать модели огранок. Управление движением - мышь и клавиатура
+как в компьютерных играх. Вывод на экран осуществляется при помощи <b>ThreeJS</b>.
+<br><br>
+&nbsp;&nbsp;По ссылке 
+<b><a href="http://diamond3d.ucoz.ru/Pages/Page_01.html" target="_blank">
+Pages</a></b> можно перейти на страницы сайта с <b>36</b> моделями различных огранок.
+Вывод на экран на этих страницах осуществляется при помощи чистого <b>API WebGL</b>.
+<br><br>
+&nbsp;&nbsp;По ссылке 
+<b><a href="http://diamond3d.ucoz.ru/Dispersion/Flower_A_D.html" target="_blank">
+Diamond Cuts with Dispersion Light </a></b> можно перейти на страницы сайта с 
+на которых модели отображены при помощи шейдеров и кубических текстур.
+Вывод на экран моделей с этих страниц осуществляется при помощи <b>ThreeJS</b>.
+</p>
+
+
+
+</body>
+</html>

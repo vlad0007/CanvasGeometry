@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<title>Reference canvas2D </title>
+	<link rel="stylesheet" type="text/css" href="../libs/style.css">
+	<script src="../libs/run_prettify.js?autoload=true&amp;lang=css" defer=""></script>
+	<script type = "text/javascript" src = "../libs/dat.gui.js"></script>
+	<script src="../libs/WebGeometry.js"></script>
+	<script src="../libs/canvas2D.js"></script>
+
+</head>
+
+<body>
+
+<h2 align = "left">&emsp;&emsp; Справочник по функциям canvas2D</h2>
+
+<b><span class=black>Общие замечания по параметрам функций</span></b>
+<br>
+   &emsp;&emsp;<em>Во всех функциях:</em><br>
+ &ensp;<b><code>ctx</code> - контекст рисования</b>
+ <br>
+ &ensp;<code><b>width</b></code> - толщина линии<br>
+ &ensp;<code><b>color</b></code> - цвет линии или текста <br> 
+  &emsp;<code>R</code> - красный цвет<br>
+  &emsp;<code>G</code> - зеленый цвет<br>
+  &emsp;<code>B</code> - синий цвет<br>
+<br>
+    &emsp;&emsp;<em>В некоторых функциях:</em><br>
+  &emsp;<code>Black</code> - черный цвет<br>
+  &emsp;<code>Gray</code> - серый цвет<br>
+  &emsp;<code>DarkOrchid</code> - пурпурный цвет<br>
+  &ensp; Также цвет можно задавать явно. Например: <code>"#A2BC89"</code><br>
+<br>
+
+<h3 align = "left">&emsp;&emsp; Преобразование координат</h3>
+
+&ensp; <b><span class=black>function fx(x),&ensp; function fy(y)</span></b>
+<br>
+Функции <code>fx(x)</code> и <code>fy(y)</code> используются для преобразования<br> 
+значений координат холста <code>x</code> и <code>y</code>, заданных в системе<br> 
+координат используемых в библиотеке функций <b>WebGeometry</b> <br> 
+(в дальнейшем будем использовать для нее обозначение <b>WG</b>),<br> 
+в значения координат холста <code>x_canvas</code> и <code>y_canvas</code> принятых<br>  
+в <b>HTML5 Canvas</b>.
+
+<pre>
+function fx(x)
+{
+  var x_canvas = x * <b>SCALE</b> + <b>xC</b>;
+  return x_canvas;
+}
+
+function fy(y)
+{
+  var y_canvas = - y * <b>SCALE</b> + <b>yC</b>;
+  return y_canvas;
+}
+</pre>	
+
+Значения <code>SCALE</code>, <code>xC</code> и <code>yC</code> изначально задаются программистом.<br>  
+Эти значения являются глобальными переменными сразу для всей программы отображения. <br> 
+В процессе работы программы их можно (при желании) изменять при помощи мыши или клавиатуры.<br> 
+&ensp; <code>SCALE</code>  - задает масштаб отображения координат в <b>WG</b> в координаты холста <b>HTML5 Canvas</b>.
+<br>
+&ensp;<code>xC</code> - задает в <em>пикселах</em> по оси <code>OX</code> положение начала координат в системе <b>WG</b>.
+<br>
+&ensp;<code>yC</code> - задает в <em>пикселах</em> по оси <code>OY</code> положение начала координат в системе <b>WG</b>.
+</p>
+
+<h3 align = "left">&emsp;&emsp; Отображение координатных осей и сетки</h3>
+
+&ensp; <b><span class=black>function axes(ctx, dx, dy, width, color) </span></b>
+<br>
+Функция отображает оси <b>OX</b> и <b>OY</b> на холсте
+<br> 
+<code>dx</code> и <code>dy</code> - размеры осей по <b>X</b> и <b>Y</b>
+<br>
+<code>width</code> - толщина линий осей<br>
+<code>color</code> - цвет линий осей
+<br><br>
+
+&ensp;<b><span class=black>function grid(ctx, n_hor, n_vert, step, width, color)</span></b><br>
+Функция отображает сетку на холсте<br>
+<code>n_hor</code> - количество делений сетки по горизонтали
+<br>
+<code>n_vert</code> - количество делений сетки по вертикали
+<br>
+<code>step</code> - шаг сетки<br>
+<code>width</code> - толщина линий сетки<br>
+<code>color</code> - цвет линий сетки
+<br><br>
+
+
+<h3 align = "left">&emsp;&emsp; Отображение точек</h3>
+
+&ensp;<b><span class=black>function rsp(ctx, point, size, color)</span></b><br>
+Отображение точки в виде квадрата<br>
+<code>point</code> - координаты точки в формате <code>Point2D</code> (система координат <b>WG</b>)<br>
+<code>size</code> - размер точки в пикселах<br>
+<code>color</code> - цвет точки
+<br><br>
+
+&ensp;<b><span class=black>function csp(ctx, point, size, color)</span></b><br>
+Отображение точки в виде окружности<br>
+<code>point</code> - координаты точки в формате <code>Point2D</code> (система координат <b>WG</b>)<br>
+<code>size</code> - размер точки в пикселах<br>
+<code>color</code> - цвет точки
+<br><br>
+<br>
+
+
+<h3 align = "left">&emsp;&emsp; Отображение текста</h3>
+
+<img src = "text_draw.png" border="1">
+<br>
+&ensp;<b><span class=black>text(ctx, str, point, align, baseline, color, font)</span></b><br>
+Отображение текстовой строки.<br>
+<code>str</code> - текстовая строка<br>
+<code>point</code> - координаты точки задают положение текстовой строки <code>str</code>.<br>
+<code>align</code> - смещение текста по горизонтали относительно точки <code>point</code>.<br>
+&ensp;&ensp;&ensp;&ensp; Параметр <code>align</code> может принимать значения <code>"lt", "center", "rt"</code>.<br>
+<code>baseline</code> - смещение текста по вертикали относительно точки <code>point</code>.<br>
+&ensp;&ensp;&ensp;&ensp; Параметр <code>baseline</code> может принимать значения <code>"up", "mid", "dn"</code>.<br>
+В отличие от функций <code>text1</code> и <code>text2</code> в этой функции нет дополнительного<br> 
+смещения положения текста относительно положения <code>point</code>.
+<br>
+Это смещение совпадает (<em><b>но не по названию параметра</b></em>) со значением <br> 
+смещения текста задаваемого в функции <code>fillText</code> <b>HTML5 Canvas</b>.
+<br>
+На рисунке <b>1</b> показано как использовать значения <code>"up", "mid", "dn", "lt", "center", "rt"</code>.
+<br>
+<br>
+&ensp;<b><span class=black>text1(ctx, str, point, align, baseline, color, font)</span></b><br>
+Отображение текстовой строки.<br>
+В отличие от функции <code>text</code> в данной функции <code>text1</code> введено дополнительное<br> 
+смещение положения текста относительно положения задаваемого точкой <code>point</code>.<br>
+<code>str</code> - текстовая строка<br>
+<code>point</code> - координаты точки задают положение текстовой строки <code>str</code>.<br>
+<code>align</code> - смещение текста по горизонтали относительно точки <code>point</code>.<br>
+&ensp;&ensp;&ensp;&ensp; Параметр <code>align</code> может принимать значения <code>"lt", "center", "rt"</code>.<br>
+<code>baseline</code> - смещение текста по вертикали относительно точки <code>point</code>.<br>
+&ensp;&ensp;&ensp;&ensp; Параметр <code>baseline</code> может принимать значения <code>"up", "mid", "dn"</code>.<br>
+На рисунке <b>1</b> показано как использовать значения <code>"up", "mid", "dn", "lt", "center", "rt"</code>.
+<br><br>
+
+&ensp;<b><span class=black>text2(ctx, str, point, align, baseline, color, font)</span></b><br>
+Отображение текстовой строки.<br>
+В отличие от функции <code>text</code> в данной функции <code>text2</code> введено дополнительное<br> 
+смещение положения текста относительно положения задаваемого точкой <code>point</code>.<br> 
+Но величина этого смещения больше, чем величина соответствующего смещения в функции <code>text1</code>.
+<br>
+<code>str</code> - текстовая строка<br>
+<code>point</code> - координаты точки задают положение текстовой строки <code>str</code>.<br>
+<code>align</code> - смещение текста по горизонтали относительно точки <code>point</code>.<br>
+&ensp;&ensp;&ensp;&ensp; Параметр <code>align</code> может принимать значения <code>"lt", "center", "rt"</code>.<br>
+<code>baseline</code> - смещение текста по вертикали относительно точки <code>point</code>.<br>
+&ensp;&ensp;&ensp;&ensp; Параметр <code>baseline</code> может принимать значения <code>"up", "mid", "dn"</code>.<br>
+На рисунке <b>1</b> показано как использовать значения <code>"up", "mid", "dn", "lt", "center", "rt"</code>.
+<br><br>
+&ensp;<b><span class=black>roundNumber(num, places)</span></b><br>
+Форрмирование заданного числового представления.<br>
+Используется для вывода чисел на экран.<br>
+Функция возвращает форматированное значение числа <code>num</code>.<br>
+<code>num</code> - исходное число<br>
+<code>places</code> - задает количество цифр в возвращаемом значении<br>
+<br><br>
+
+
+<h3 align = "left">&emsp;&emsp; Отображение прямых и отрезков</h3>
+
+<img src = "lines_draw.png" border="1">
+<br>
+&ensp;<b><span class=black>function line_ext(ctx, pt1, pt2, x_begin, x_end, width, color)</span></b><br>
+Отображение прямой проходящей через точки <code>pt1</code> и <code>pt2</code>.<br>
+Отображение прямой начинается с точки имеющей значение координаты <b>X</b> равное <code>x_begin</code>
+<br>
+и заканчивается в точке имеющей значение координаты <b>X</b> равное <code>x_end</code>.<br>
+Данную функцию целесообразно использовать для отображения на чертеже выносных линий.
+<br><br>
+
+&ensp;<b><span class=black>function line_ext2(ctx, pt1, pt2, kf, width, color)</span></b><br>
+Отображение прямой проходящей через точки <code>pt1</code> и <code>pt2</code>.<br>
+Прямая простирается дальше точек <code>pt1</code> и <code>pt2</code> в обе стороны.<br>
+Параметр <code>kf</code> определяет величину протяженности прямой за точки <code>pt1</code> и <code>pt2</code>.
+<br>
+Данную функцию целесообразно использовать для отображения на чертеже выносных линий.
+<br><br>
+
+&ensp;<b><span class=black>function line_segment(ctx, pt1, pt2, width, color)</span></b><br>
+Отображение отрезка прямой от точки <code>pt1</code> до точки <code>pt2</code> сплошной линией.<br>
+<br>
+
+&ensp;<b><span class=black>function line_segment_dash(ctx, pt1, pt2, width, color)</span></b>.<br>
+Отображение отрезка прямой от точки <code>pt1</code> до точки <code>pt2</code> пунктирной линией<br>
+<br>
+
+&ensp;<b><span class=black>function segment_arrow(ctx, pt1, pt2, width, scale, color)</span></b><br>
+Отображение отрезка прямой от точки <code>pt1</code> до точки <code>pt2</code> сплошной линией 
+со стрелкой в точке <code>pt2</code>.<br><br>
+
+&ensp;<b><span class=black>function segment_two_arrow(ctx, pt1, pt2, width, scale, color)</span></b><br>
+Отображение отрезка прямой от точки <code>pt1</code> до точки <code>pt2</code> сплошной линией 
+со стрелками в точках <code>pt1</code> и <code>pt2</code>.<br>
+Данную функцию целесообразно использовать для отображения на чертеже размерных линий.
+<br><br>
+
+<h3 align = "left">&emsp;&emsp; Отображение треугольника/стрелки</h3>
+
+<img src = "triangle_draw.png" border="1">
+<br>
+&ensp;<b><span class=black>function arrow(ctx, point, ang, scale, color, direction) </span></b><br>
+Отображение треугольника (стрелки) в точке <code>point</code>.<br> 
+<code>ang</code> - задает угол наклона треугольника (стрелки).<br> 
+&ensp;&ensp;Угол <code>ang</code> отсчитывается от оси <b>OY</b> по часовой стрелке,<br>  
+&ensp;&ensp;если <code>direction = true</code> или <code>direction = undefined</code>. <br>
+&ensp;&ensp;И против часовой стрелки, если <code>direction = false</code>. <br>
+<code>scale</code> - размер/масштаб треугольника (стрелки).<br>
+&ensp;&ensp;Параметр <code>scale</code> просто определяет некоторый масштаб изображения треугольника.<br>
+ При значении <code>scale = 1.0</code> треугольник (стрелка) не масштабируется по величине.<br>
+<br>
+
+&ensp;<b><span class=black>function arr(ctx, point, angle, scale)</span></b><br>
+Вспомогательная функция для отрисовки острия стрелки.<br>
+<code>angle</code> - наклон острия стрелки<br>
+<code>scale</code> - размер/масштаб острия стрелки
+<br><br>
+<br>
+
+<h3 align = "left">&emsp;&emsp; Отображение дуг</h3>
+
+<img src = "angles_draw.png" border="1">
+<br>
+&ensp;<b><span class=black>function draw_angle(ctx, point, angle_begin, angle_end, radius, width, color)</span></b><br>
+Отображение отрезка дуги с радиусом заданным с учетом величины значения масштабирования <code>SCALE</code>.<br>
+<code>point</code> - точка задающая центр дуги<br>
+<code>angle_begin</code> - начальный угол дуги<br>
+<code>angle_end</code> - конечный угол дуги<br>
+&ensp;&ensp;Вращение (отсчет углов) осуществляется против часовой стрелки.<br>
+<br>
+
+&ensp;<b><span class=black>function draw_angle_txt(ctx, point, angle_btgin, angle_end, radius, str, align, baseline, width, color, font)</span></b><br>
+Отображение отрезка дуги с радиусом заданным с учетом величины значения масштабирования <code>SCALE</code>.<br>
+Рядом с дугой отображается текст заданный программистом.<br>
+<code>str</code> - текст сопровождающий дугу<br>
+<code>point</code> - точка задающая центр дуги<br>
+<code>angle_begin</code> - начальный угол дуги<br>
+<code>angle_end</code> - конечный угол дуги<br>
+&ensp;&ensp;Вращение (отсчет углов) осуществляется против часовой стрелки.<br>
+<br>
+
+&ensp;<b><span class=black>function radius_arrow(ctx, center, radius, angle, width, scale, color)</span></b><br>
+Отображение отрезка со стрелкой имеющий длину равную величине <code>radius</code>.<br>
+Отрезок начинается в точке <code>point</code> и располагается под углом <code>angle</code> к оси <b>OX</b>.<br>
+<code>scale</code> - задает размер стрелки на конце отрезка.<br>
+<br>
+
+<h3 align = "left">&emsp;&emsp; Отображение окружностей и эллипсов</h3>
+
+&ensp;<b><span class=black>function circle(ctx, point, radius, width, color)</span></b><br>
+Отображение окружности с центром в точке <code>point</code> с радиусом <code>radius</code>.
+<br><br>
+
+&ensp;<b><span class=black>function drawEllipse(ctx, x, y, a, b, width, color)</span></b><br>
+Отображение эллипса с центром в точке с координатами <code>(x, y)</code> в системе <b>WG</b>.
+<br>
+<code>a</code> и <code>b</code> - размеры полуосей эллипса.
+<br><br>
+
+&ensp;<b><span class=black>function drawEllipse2(ctx, point, a, b, width, color)</span></b><br>
+Отображение эллипса с центром в точке <code>point</code>.<br>
+<code>a</code> и <code>b</code> - размеры полуосей эллипса.
+<br><br>
+
+<h3 align = "left">&emsp;&emsp; Отображение многоугольников</h3>
+
+&ensp;<b><span class=black>function draw_polygon_line(ctx, points, width, color)</span></b><br>
+Отображение замкнутого контура проходящего через массив точек <code>points</code><br>
+<code>color</code> - цвет линий контура<br>
+<br>
+
+&ensp;<b><span class=black>function draw_polygon(ctx, points, width, color, facet_color)</span></b><br>
+Отображение закрашенного контура проходящего через массив точек <code>points</code><br>
+<code>color</code> - цвет линий контура<br>
+<code>facet_color</code> - цвет закраски полигона лежащего внутри контура<br>
+<code>width</code> - толщина линии окаймляющей многоугольник.<br>
+&ensp;Если значение этого параметра меньше <b>0</b>, то линия окаймляющая многоугольник не проводится.
+<br><br>
+
+&ensp;<b><span class=black>function fill_polygon(ctx, points, n, facet_color)</span></b><br>
+Отображение закрашенного многоугольника имеющего <code><b>n</b></code> вершин в массиве <code>points</code>.<br>
+Эта функция подобна функции <code>draw_polygon</code>, но без проведения линий окаймляющих полигон.<br>
+<code>facet_color</code> - цвет закраски полигона<br>
+<code>n</code> - количество вершин полигона<br>
+<br>
+
+</body>
+</html>

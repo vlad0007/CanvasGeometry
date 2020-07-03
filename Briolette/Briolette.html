@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<title>Briolette Canvas </title>
+	<link rel="stylesheet" type="text/css" href="../libs/style.css">
+	<script src="../libs/run_prettify.js?autoload=true&amp;lang=css" defer=""></script>
+	<script type = "text/javascript" src = "../libs/dat.gui.js"></script>
+	<script src="../libs/WebGeometry.js"></script>
+	<script src="../libs/canvas2D.js"></script>
+	<script src = "../libs/polyhedron_canvas.js"></script>
+	<script src = "briolette_verts.js"></script>
+	<script src="briolette.js"></script>
+
+	<style>
+		div.out
+		{
+			position: relative;
+			width: 780px;
+			height: 412px;
+			left: 5px;
+			background-color: #aaffff;
+			border: solid 2px;
+		}
+	
+		div.in
+		{
+			position: absolute;
+			left: 510px;
+			top: 5px;			
+			height: 230px;
+			width: 265px;
+			background-color: #eeeeee;
+			border: solid 1px;
+		}
+
+		div.canvas
+		{
+			position: absolute;
+			left: 5px;
+			top: 5px;			
+			height: 400px;
+			width: 500px;
+			background-color: #fcffff;
+			border: solid 0px;		
+		}
+		
+		div.gui
+		{
+			position: absolute;
+			left: 5px;
+			top: 5px;
+		}	
+	</style>
+
+<script>
+
+	var DEGREE = 0.01745329251994;
+	var xC, yC, SCALE;
+		
+	function initiate()		
+	{
+		briolette();
+	}
+	
+addEventListener("load", initiate);
+</script>
+
+</head>
+
+<body oncontextmenu="return false">
+
+<h4 align = "center">&emsp;&emsp;
+<a href="../Heart/Heart.html"> <span class=purple>Сердце (Heart)</span></a>  <span class=purple>&ensp;◄</span>
+&emsp;&emsp;&emsp;
+<a href="../index.html"> <span class=purple> Содержание  </span></a>
+&emsp;&emsp;&emsp;
+ <span class=purple>► &ensp;</span></a><a href="../Maltese/Maltese.html"> <span class=purple> Мальтийский крест (Maltese Cross)  </span></a>
+</h4>
+
+<h3 align = "center"> Бриолетт </h3>
+
+<p>
+Подробное описание расчета координат вершин данной модели можно найти на <b>Web</b>-странце 
+<b><a href="https://vlad0007.github.io/polyhedron2/Briolette/Chapter_22.html" target="_blank">
+Three.js и геометрия. Глава 22. Бриолет (Briolette)</a></b>.
+<p>
+
+<p>
+Отображение модели на холст сделано точно также как и для модели многогранника <a href="../Octagon/Octagon3.html" target="_blank">октагон</a>
+</p>
+
+<div class="out">  
+	<div class="canvas">
+		<canvas id="canvas_draw" width="500" height="400" style="border: 1px solid"></canvas>
+	</div>
+	<div class="in">
+		<div class="gui" id="gui_container" ></div> 
+	</div>	
+</div>
+
+
+
+</body>
+</html>

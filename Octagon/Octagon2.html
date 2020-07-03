@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<title>Octagon - Part 2. </title>
+	<link rel="stylesheet" type="text/css" href="../libs/style.css">
+	<script src="../libs/run_prettify.js?autoload=true&amp;lang=css" defer=""></script>
+	<script src = "../libs/dat.gui.js"></script>
+	<script src = "../libs/WebGeometry.js"></script>
+	<script src = "../libs/canvas2D.js"></script>
+	<script src = "../libs/polyhedron_canvas.js"></script>
+	<script src = "octagon_verts.js"></script>
+	<script src = "octagon2.js"></script>
+
+	<style>
+		div.out
+		{
+			position: relative;
+			width: 780px;
+			height: 412px;
+			left: 5px;
+			background-color: #aaffff;
+			border: solid 2px;
+		}
+	
+		div.in
+		{
+			position: absolute;
+			left: 510px;
+			top: 5px;			
+			height: 230px;
+			width: 265px;
+			background-color: #eeeeee;
+			border: solid 1px;
+		}
+
+		div.canvas
+		{
+			position: absolute;
+			left: 5px;
+			top: 5px;			
+			height: 400px;
+			width: 500px;
+			background-color: #fcffff;
+			border: solid 0px;		
+		}
+		
+		div.gui
+		{
+			position: absolute;
+			left: 5px;
+			top: 5px;
+		}	
+	</style>
+
+<script>
+
+	var DEGREE = 0.01745329251994;
+	var xC, yC, SCALE;
+		
+	function initiate()		
+	{
+		octagon();
+	}
+	
+addEventListener("load", initiate);
+</script>
+
+</head>
+
+<body oncontextmenu="return false">
+
+<h4 align = "center">&emsp;&emsp;
+<a href="../Octagon/Octagon1.html"> <span class=purple>Многогранник октагон&emsp;Часть &#8544;.</span></a>  <span class=purple>&ensp;◄</span>
+&emsp;&emsp;&emsp;
+<a href="../index.html"> <span class=purple> Содержание  </span></a>
+&emsp;&emsp;&emsp;
+ <span class=purple>► &ensp;</span></a><a href="../Octagon/Octagon3.html"> <span class=purple>Многогранник октагон.&ensp;Часть &#8546;.</span></a>
+</h4>
+
+<br>
+
+<h2 align = "center"> Многогранник октагон. &emsp; Часть &#8545;. </h2>
+<h3 align = "center"> <em><span class=purple>Задание параметров модели</span></em> </h3>
+<h3 align = "center"> <em><span class=purple>Отображение нумерации вершин модели</span></em> </h3>
+<h3 align = "center"> <em><span class=purple>Нанесение на чертеж выносных и размерных линий</span></em> </h3>
+
+
+<p>
+В предыдущем разделе было рассмотрено построение неизменяемой модели многогранника октагон, которую можно вращать мышью.
+В данном разделе мы добавим возможность изменять размеры отдельных частей модели,
+высвечивать номера вершин, выбирать отдельные грани и отображать значения координат всех точек принадлежащих модели.     
+Напомним, что расчет координат вершин модели полностью и без изменений взят со страницы 
+<b><a href="https://vlad0007.github.io/polyhedron1/Octagon/Chapter_05.html" 
+target="_blank">Глава 5. Многогранник октагон (часть 1)</a></b>.
+</p>
+
+<h4 align = "center"> HTML программа </h4>
+
+&nbsp; Рассмотрим работу <em>online</em>-программы использующую функции библиотеки <b>canvas2D</b> 
+для отображения на холсте <b>3D</b>-модели огранки октагон.  
+<br><br>
+<div class="out">  
+	<div class="canvas">
+		<canvas id="canvas_draw" width="500" height="400" style="border: 1px solid"></canvas>
+	</div>
+	<div class="in">
+		<div class="gui" id="gui_container" ></div> 
+	</div>	
+</div>
+<br>
+<p>
+По ссылке 
+<b><a href="https://vlad0007.github.io/polyhedron1/Octagon/Chapter_05.html" target="_blank"> 
+Глава 5. Многогранник октагон (часть 1)</a></b>
+можно увидеть точно такую же модель огранки октагон, но вывод на холст которой осуществлен при помощи 
+функций библиотеки <b>ThreeJS</b>.
+Никаких принципиальных отличий в изображении модели на холсте в обеих программах  нет. 
+Есть отличия в панелях управления расположенных рядом с холстом. 
+В новой программе отсутствует панель имеющая желтый цвет (она находится в центре окна в старой
+программе). Несколько изменена панель (<b>controller</b>) в правой части окна. Она предназначается 
+для задания значений параметров модели и создается на основе библиотеки <b>dat.GUI</b>. 
+Описание работы и примеры использования этой библиотеки можно найти в интернете по адресу
+<b><a href="https://workshop.chromeexperiments.com/examples/gui/#1--Basic-Usage
+" target="_blank">dat.GUI</a></b>.
+</p>
+
+&emsp; &emsp;Работа программы начинается с вызова функции имеющей название octagon.
+Этот вызов расположен в следующей <b>HTML</b> программе: 
+
+<img src = "html_2.png" border="1">
+<br>
+&ensp;В функции <code>octagon</code> происходит создание и задание параметров холста, создается 
+панель (<b>controller</b>) управления значениями параметров модели и расчет координат вершин модели (функция <code>recalc</code>). 
+После этого происходит вывод изображения модели на холст (функция <code>draw</code>). 
+В процессе работы программы пользователь используя панель управления (<b>controller</b>) может изменять 
+значения параметров модели. При каждом изменении параметров происходит пересчет координат вершин модели 
+путем вызова функции <code>recalc</code>. Измененная модель отображается на холсте функцией <code>draw</code>.<br>
+
+<p>
+Изображение модели будет находиться в <b>web</b>-элементе <b>div</b> класса "<b>out</b>". 
+Этот блок имеет <i>относительное</i> (<i>relative</i>) позиционирование в <i>нормальным потоке</i> элементов 
+на <b>web</b>-странице. 
+Внутри этого блока <b>div</b> расположены два других блока имеющих относительно него <i>абсолютное</i> позиционирование.
+В левом из этих двух блоков расположен элемент типа <b>canvas</b> (ему присвоен идентификатор <code>canvas_draw</code>).  
+В правом из этих двух блоков расположен элемент
+<b>gui_container</b> предназначенный для задания и изменения значений параметров модели. 
+</p>
+<img src = "div_png.png" border="1">
+<br><br>
+
+<h4 align = "center"> Функция octagon </h4>
+&emsp; Рассмотрим в несколько сокращенном виде исходный текст функции <code>octagon</code>.
+Ее полный исходный текст можно найти в файле <b>octagon.js</b>.
+<br>
+<pre class="prettyprint" id="quine">
+function octagon()
+{
+	// получаем ссылку на элемент canvas_draw, который показан на рисунке выше:
+	elem = document.getElementById('canvas_draw'); 
+	elem.style.position = "relative";
+	elem.style.border = "1px solid";
+	// Получаем 2D-контекст рисования на холсте.
+	// Когда мы отображали модель с помощью функций библиотеки ThreeJS,
+	//  мы получали трехмерный контекст для рисования "3d".
+	ctx = elem.getContext("2d"); 
+	
+	ctx.font = "italic 10pt Arial";
+	ctx.fillStyle = '#0000ff';
+	
+	// SCALE задает ИСХОДНЫЙ масштаб при рисовании проекции модели на плоскость OXY
+	SCALE = 320;
+	// xC и yC задают в данном случае примерно центральную точку на плоскости OXY (на холсте)
+	xC = elem.width / 2;
+	yC = elem.height / 2.2;
+	
+	// Расчет координат вершин 3D модели.
+	recalc();
+	// Вывод модели на экран
+	draw();
+	
+	// Обработчики событий связанных с мышью.
+	elem.onmousedown = handleMouseDown;
+	document.onmouseup = handleMouseUp;
+	elem.onmousemove = handleMouseMove;
+
+<p style="background-color: #EEEEFF">
+	Установка первоначальных значений в dat.GUI.
+	Эти значения будут определять значения параметров
+	при первом выводе изображения модели на холст.
+	Также задаем значения углов на которые будет повернута модель
+	и коэффициент масштабирования.
+</p>
+	controller = new function() 
+	{
+		this.lw = lw;
+		this.r = r;
+		this.corner_br_ratio = corner_break_ratio;
+		this.corner_br_angle = corner_break_angle / DEGREE;   // перевели в градусы;
+
+		this.hCrown = hCrown;
+		this.angle_B0 = angle_B0 / DEGREE;	// верхний угол короны
+		this.angle_B1 = angle_B1 / DEGREE;	// верхний угловой угол короны
+		this.angle_A0 = angle_A0 / DEGREE;  // нижний угол короны
+		this.H2H = H2H;		  
+
+		this.hp = hp;    // глубина павильона
+		this.angle_C0 = angle_C0 / DEGREE;	// Угол наклона грани A
+		this.angle_C1 = angle_C1 / DEGREE;	// Угол наклона грани B
+		this.angle_C2 = angle_C2 / DEGREE;	// Угол наклона грани C
+		this.hLowerFacet = hLowerFacet;	    // Отношение высоты LowerFacet к hp
+		this.hMiddleFacet = hMiddleFacet;	// Отношение высоты MiddleFacet к hp		
+		
+		// значения углов на которые повернута модель
+		this.rotationX = angleX/DEGREE;
+		this.rotationY = angleY/DEGREE;
+		this.rotationZ = angleZ/DEGREE;
+		
+		// scale_controller позволяет измененять размеры модели на экране
+		this.scale_controller = scale_controller;
+		
+		// Если enumeration = true, то на экран выводится нумерация вершин модели.
+		this.enumeration = false;
+		this.sizes = false;
+	}();
+<p style="background-color: #EEEEFF">
+	Создаем новый объект <b><a href="https://workshop.chromeexperiments.com/examples/gui/#1--Basic-Usage
+	" target="_blank">dat.GUI</a></b>
+	с правой стороны от холста (canvas).
+	В панели dat.GUI будут отображаться значения параметров модели.
+	Также будет возможность при помощи dat.GUI изменять эти значения параметров.
+	При помощи dat.GUI можно поворачивать модель вокруг осей X, Y, Z
+	и изменять ее размер на холсте.
+	Поля enumeration и sizes позволяют включать/выключать отображение нумерации
+	вершин модели и простановку размеров модели на холсте.
+</p>
+	gui = new dat.GUI({ autoPlace: false });
+	gui.domElement.id = 'gui';
+	gui_container.appendChild(gui.domElement);
+	
+	// Для включения / выключения отображения нумерации вершин в контроллер
+	//   вводим поле 'enumeration'
+	gui.add( controller, 'enumeration', false ).onChange( function() 
+	{
+		enumeration = controller.enumeration; 
+		recalc();
+		draw();
+	});
+	// Для включения / выключения отображения некоторых характерных 
+	// для модели размеров в виде отрезков со стрелками на концах 
+	// в контроллер вводим поле 'sizes'
+	gui.add( controller, 'sizes', false ).onChange( function() 
+	{
+		sizes = controller.sizes; 
+		recalc();
+		draw();
+	});
+	
+	// В контроллере создаем папку 'Rotation & Scale'
+	var f0 = gui.addFolder('Rotation & Scale');
+	// В созданную в контроллере папку вводим поле для задания поворота
+	//  модели вокруг оси X.
+	f0.add(controller, 'rotationX', -180, 180).onChange( function() 
+	{
+		angleX = (controller.rotationX)*DEGREE;
+		recalc();
+		draw();
+		var angleX_deg = angleX/DEGREE;
+		var angleX_text = "angle X = " + roundNumber(angleX_deg, 3) + "°";
+		var angleY_deg = angleY/DEGREE;
+		var angleY_text = "angle Y = " + roundNumber(angleY_deg, 3) + "°";			
+		var angleZ_deg = angleZ/DEGREE;
+		var angleZ_text = "angle Z = " + roundNumber(angleZ_deg, 3) + "°";	
+		ctx.fillText(angleX_text, 380, 14);
+		ctx.fillText(angleY_text, 380, 32);
+		ctx.fillText(angleZ_text, 380, 50);	
+	});
+	.......................
+	.......................
+	....................... 
+<p style="background-color: #EEEEFF">
+	Полностью исходный текст функции octagon можно найти в файле octagon.js.
+	Сейчас в качестве примера показано задание значения в контроллере только одного 
+	параметра определяющего форму модели. Это параметр lw.
+	Он задает отношение длины модели к ее ширине.
+	Все подробности про параметры данной модели 
+	можно найти на странице  <b><a href="https://vlad0007.github.io/polyhedron1/Octagon/Chapter_05.html" target="_blank">Многогранник октагон (часть 1)</a></b> 
+</p>	
+	// Для четырех величин задающих значение четырех параметров рундиста огранки
+	// создается папка 'Girdle'.
+	var f1 = gui.addFolder('Girdle'); 
+	// В папку заносится поле для параметра с именем lw.
+	//  lw - это один из четырех параметров определяющих форму и размер рундиста.
+	f1.add(controller, 'lw', 0.1, 2.0).onChange( function() 
+	{
+	   // Для возможного отката назад значения параметра
+	   //   запоминаем исходное значение параметра.
+	   var temp = lw;
+	   // Читаем значение lw из контроллера.
+	   lw = controller.lw;
+	   // Пересчет значений координат вершин модели и создание
+	   //   нового положения граней.
+	   recalc();
+	   // Проверка модели на выпуклость
+	   if (isCorrect() == -1) 
+	   {
+		   //  Если модель не является выпуклой после 
+		   // изменения значения параметра lw, то откат назад.
+		   lw = temp;
+		   // Пересчет значений координат вершин модели
+		   //  для возврата к исходному виду модели.
+		   recalc();
+		   // Устанавливаем в контроллере исходное значение lw.
+		   controller.lw = temp;
+	   }
+	   // Отрисовка модели на холсте.
+	   draw();
+	   gui.updateDisplay();
+	});
+	..........................
+	..........................
+}
+</pre>
+
+<p>
+
+<h4 align = "center"> Функция recalc </h4>
+<p> 
+Для пересчета координат вершин модели и создания модели используется функция recalc:
+
+<pre class="prettyprint" id="quine">
+function recalc()
+{
+	// Расчет координат вершин 3D модели.
+	vertices.length = 0;
+	VerticesCalculation();
+
+	// Создание топологии 3D модели с учетом координат вершин и их взаимосвязи.
+	plgs.length = 0;
+	colors.length = 0;
+	points.length = 0;
+	CreatePolyhedron();		
+}
+</pre>
+
+&ensp; В процессе выполнения функции recalc происходит вызов двух других функций -
+VerticesCalculation и CreatePolyhedron.
+
+<br><br>
+&ensp;Функция VerticesCalculation осуществляет расчет координат вершин модели огранки октагон.
+Этот расчет во всех подробностях рассмотрен на странице 
+<b><a href="https://vlad0007.github.io/polyhedron1/Octagon/Chapter_05.html" target="_blank">
+Многогранник октагон (часть 1)</a></b>. Особо отметим тот факт, что нумерация вершин и граней этой 
+модели <em>полностью совпадает</em> с нумерацией вершин и граней создаваемой модели. 
+</p>
+<br>
+
+<h4 align = "center"> Функция отрисовки проекции многогранника на холст draw </h4>
+&ensp;&ensp;Вывод изображения на холст осуществляет функция <code>draw</code>. 
+&ensp;Следует сделать одно существенное замечание. В библиотеке <b>canvas2D</b> используются
+<b>2D</b>-координаты, а для расчет положения вершин модели - <b>3D</b>-координаты.
+Но если нам надо, напрмер, отобразить точку на <b>2D</b>-холсте, мы можем использовать
+не только <b>2D</b>-объекты, но и <b>3D</b>-объекты:
+<pre>
+      <b>2D</b>-точка:
+    <code>var point1 = new Point2D(1, 2);</code>
+      <b>3D</b>-точка:
+    <code>var point2 = new Point3D(1, 2, 0.5);</code>
+     Обе точки отобразятся на холсте правильно, так как в случае 3D-точки
+	 <b>JS</b> функция <code>csp</code> просто отбросит при выводе на холст <b>Z</b>-координату точки <code>point2</code>.
+    <code>csp(ctx, point1, 2, "B");</code>
+    <code>csp(ctx, point2, 2, "B");</code>
+</pre>
+
+&ensp; Исходный текст функции <code>draw</code> выглядит следующим образом:
+<pre class="prettyprint" id="quine">
+// Отображение модели на холсте
+function draw()
+{	
+	// В начале каждого цикла отображения необходимо очистить холст
+	// от предыдущей находящейся на нем информации.
+	ctx.clearRect(0, 0, elem.width, elem.height);
+	
+	// Данная функция содержит внутри цвета граней модели
+	facet_colors();
+	
+	// Расчет поворотов модели 
+	// Модель на экране можно повернуть либо мышью, либо используя
+	// панель в правой части программы.
+	// Для осуществления поворотов используются функции библиотеки <b>WebGeometry (WG)</b>
+	
+	// Создаем матрицы углов поворота на заданные углы вокруг осей
+	var matX = new Matrix3D(); 
+	matX.RotX(angleX); // поворот вокруг оси X
+	
+	var matY = new Matrix3D(); 
+	matY.RotY(angleY); // поворот вокруг оси Y
+	
+	var matZ = new Matrix3D(); 
+	matZ.RotZ(angleZ); // поворот вокруг оси Z
+	
+	var i, j;
+	
+	// Отрисовка модели на холсте - ребра и грани
+	for (i = 0; i < plgs.length; i++) // цикл по всем граням модели
+	{
+		for (j = 0; j < plgs[i].vertexes.length; j++) // цикл по всем вершинам грани
+		{   
+			// scale_controller - коэффициент масштабирования (это не SCALE !!!)
+			// scale_controller задается в панели управления
+			plgs[i].vertexes[j][0] = scale_controller * plgs[i].vertexes[j][0];
+			plgs[i].vertexes[j][1] = scale_controller * plgs[i].vertexes[j][1];
+			plgs[i].vertexes[j][2] = scale_controller * plgs[i].vertexes[j][2];
+			
+			// Осуществляем повороты на заданные углы вокруг осей
+			plgs[i].vertexes[j] = plgs[i].vertexes[j].Rotate(matX);
+			plgs[i].vertexes[j] = plgs[i].vertexes[j].Rotate(matY);
+			plgs[i].vertexes[j] = plgs[i].vertexes[j].Rotate(matZ);
+		}
+		
+		// Для того, чтобы были <b>НЕ</b> видны нелицевые грани модели,
+		// необходимо определить какие грани передние, а какие задние (нелицевые)
+		// При использовании <b>ThreeJS</b>, этой проблемы не было, т.к.
+		// <b>WebGL</b>, на основе которого создана <b>ThreeJS</b>, автоматически удаляет невидимые грани.
+		
+		// Берем текущий полигон (многоугольник).
+		// Первые три точки каждого многоугольника используются для создания двух 3D-векторов.
+		var pt0 = new Point3D(plgs[i].vertexes[0][0], plgs[i].vertexes[0][1], plgs[i].vertexes[0][2]);
+		var pt1 = new Point3D(plgs[i].vertexes[1][0], plgs[i].vertexes[1][1], plgs[i].vertexes[1][2]);
+		var pt2 = new Point3D(plgs[i].vertexes[2][0], plgs[i].vertexes[2][1], plgs[i].vertexes[2][2]);
+		
+		// Два 3D-вектора
+		var vec1 = new Vector3D(pt1[0] - pt0[0], pt1[1] - pt0[1], pt1[02] - pt0[2]);
+		var vec2 = new Vector3D(pt2[0] - pt0[0], pt2[1] - pt0[1], pt2[02] - pt0[2]);
+		// Векторное произведение этих двух векторов дает нормаль данного полигона
+		var vecNormal = vec1.Cross(vec2); 
+		
+		if (vecNormal[2] >= 0) // По направлению нормали определяем  
+		{                      // передние и задние грани модели
+			// рисуем грани и ребра на внешней части модели
+			draw_polygon(ctx, plgs[i].vertexes, 1, "Black", colors[i]);  
+			
+			// Если поставлена "галочка" enumeration в панели управления,
+			// то следует вывести на холст номера вершин грани
+			if (enumeration == true) 
+			{
+				// Производим нумерацию передних граней модели
+				var ind_facets = plgs[i].IndexFacet;
+				for(j = 0; j < plgs[i].vertexes.length; j++)
+				{
+					var num_vertex = ind_facets[j];
+					// Для вывода номеров грани на холст используем функцию text из файла canvas2D
+					var vertex_enum = roundNumber(num_vertex, 2);
+					text(ctx, vertex_enum, plgs[i].vertexes[j], "lt", "dn", "B", "italic 10pt Arial");
+				}
+			}
+
+			if (x_coord > -100) 
+			{
+				//  Удостоверяемся, что мышь получила какие-то координаты при перемещении по холсту
+				//  (x_coord = -100 только при запуске программы, в дальнейшем этого быть не может)
+				// и только в этом случае следует создать точку <b>point_test</b>
+				// point_test - координаты курсора мыши в системе координат <b>WebGeomtry</b>
+				var point_test = new Point3D(x_coord, y_coord);
+				var rez = PointInPolygon(point_test, i); // проверяем находится ли курсор мыши <b>НА</b> грани модели
+				if (rez == true)
+				{
+					// курсор мыши <b>НА</b> грани модели 
+					index = i; // номер грани на которой находится курсор мыши
+					var index_text = "Facet = " + roundNumber(index, 3);
+					// номер грани на которой находится курсор мыши отображаем цветом rgb(255, 0, 151)
+					// прямо на холсте, но без использования функций библиотеки canvas2D
+					// т.к. отображение значения номера грани 
+					// Если курсор мыши не находится на какой-либо грани модели,  
+					// то отображения, на холст не присходит - мышь располагается вне модели.
+					//   ВСЕГДА НАХОДИТСЯ В ОДНОМ И ТОМ ЖЕ МЕСТЕ ХОЛСТА (в его левой верхней части)
+					ctx.fillStyle = "rgb(255, 0, 151)";
+					ctx.fillText(index_text, 30, 40);
+					ctx.fillStyle = "#00F"; // устанавливаем исходный цвет
+					
+					// Обводим ребра выделенной грани цветом rgb(255, 0, 151)
+					draw_polygon_line(ctx, plgs[index].vertexes, 3, "rgb(255, 0, 151)", "B");
+					
+					// Отображаем значения координат (x, y, z) <b><em>именно той точки грани</b></em> 
+					// на которой находится курсор мыши.
+					//  Заметим, что координаты (x, y) этой точки <b>НЕ</b> совпадают с координатами (x, y)
+					//      выведенными на холст в его левом нижнем углу <b>!</b>
+					// Если курсор мыши не находится на какой-либо грани модели,  
+					// то отображения, на холст не присходит - мышь располагается вне модели.
+					var x_text = roundNumber(x_intersect_facet, 3);
+					var y_text = roundNumber(y_intersect_facet, 3);
+					var z_text = roundNumber(z_intersect_facet, 3);
+					var xyz_text = "x, y, z = (" + x_text + ", " + y_text + ", " + z_text + ")";
+					// Значение xyz_text выводим прямо на холсте, но без использования функций библиотеки canvas2D
+					//  т.к. оно <b>ВСЕГДА РАСПОЛОЖЕНО В ОДНОМ И ТОМ ЖЕ МЕСТЕ ХОЛСТА</b> (в его левой верхней части)
+					ctx.fillText(xyz_text, 20, 20);
+				}
+				else
+				{	
+					index = -1; // курсор мыши <b>НЕ</b> находится на гранях модели
+				}
+			}
+		}	
+	}
+	if (sizes == true)  
+	{
+		// Если отображены координатные размеры,
+		// то только в этом случае пунктирными линиями рисуются ребра на задней части модели.
+		
+		// Отрисовка модели на холсте - только ребра с нелицевой стороны модели
+		for (i = 0; i < plgs.length; i++) // цикл по всем граням модели
+		{		
+			// Первые три точки каждого многоугольника используются для создания двух 3D-векторов.
+			var pt0 = new Point3D(plgs[i].vertexes[0][0], plgs[i].vertexes[0][1], plgs[i].vertexes[0][2]);
+			var pt1 = new Point3D(plgs[i].vertexes[1][0], plgs[i].vertexes[1][1], plgs[i].vertexes[1][2]);
+			var pt2 = new Point3D(plgs[i].vertexes[2][0], plgs[i].vertexes[2][1], plgs[i].vertexes[2][2]);
+			
+			// Два 3D-вектора
+			var vec1 = new Vector3D(pt1[0] - pt0[0], pt1[1] - pt0[1], pt1[02] - pt0[2]);
+			var vec2 = new Vector3D(pt2[0] - pt0[0], pt2[1] - pt0[1], pt2[02] - pt0[2]);
+			// Векторное произведение vec1 и vec2
+			var vecNormal = vec1.Cross(vec2); 
+			if (vecNormal[2] < 0) // По направлению нормали определяем передние и задние грани модели
+			{                 
+				// Рисуем только ребра на задней части модели при помощи пунктирной линии
+				draw_polygon_line_dash(ctx, plgs[i].vertexes, 0.5, "rgb(66, 28, 20)");
+			}
+		}
+	}
+	
+	// В правой верхней части холста тремя строками отображаем значения
+	// углов на которые повернута модель вокруг осей <b>X, Y</b> и <b>Z</b>.
+	var angleX_deg = angleX/DEGREE;
+	var angleX_text = "angle X = " + roundNumber(angleX_deg, 3) + "°";
+	
+	var angleY_deg = angleY/DEGREE;
+	var angleY_text = "angle Y = " + roundNumber(angleY_deg, 3) + "°";
+	
+	var angleZ_deg = angleZ/DEGREE;
+	var angleZ_text = "angle Z = " + roundNumber(angleZ_deg, 3) + "°";
+	
+	ctx.fillText(angleX_text, 380, 14);
+	ctx.fillText(angleY_text, 380, 32);
+	ctx.fillText(angleZ_text, 380, 50);
+	
+	var x_text = roundNumber(x_coord, 3);
+	var y_text = roundNumber(y_coord, 3);
+	var xy_text = "x, y = (" + x_text + ", " + y_text + ")";
+	ctx.fillText(xy_text, 20, 390); // правая верхняя часть холста
+	
+	// Если поставлена "<em>галочка</em></b>" в поле <b>sizes</b> панели управления 
+	// то на холсте отображаются некоторые, характерные для данной модели размеры,
+	// при помощи выносных и размерных линий. 
+	if (sizes == true)
+	{	// Наносим размеры модели на холст
+		// Как отбражать подобную информацию на холсте 
+		// показано на странице <b>DrawGeometry.html</b>.
+		// Исходный текст четырех следующих функций можно
+		//  найти в файле <b>octagon2.js</b>.
+		Draw_FullHeight(matX, matY, matZ);
+		Draw_CrownHeight(matX, matY, matZ);
+		Draw_PavilionDepth(matX, matY, matZ);
+		Draw_Table(matX, matY, matZ);
+	}
+}
+</pre>
+
+<h4 align = "center"> Проверка модели на правильность ее построения </h4>
+
+<p>
+Огранка <em>октагон</em> должна оставаться выпуклой при любом значении параметров.
+С этой целью всякий раз когда мы изменяем значение любого параметра для
+проверки выпуклости вновь созданного многогранника выполняется функция <code>isCorrect</code>.
+На <b><a href="https://vlad0007.github.io/polyhedron1/Pyramid/Chapter_02.html" 
+target="_blank">странице</a></b> можно найти описание этой функции.
+
+А на  <b><a href="https://vlad0007.github.io/polyhedron1/Flower/Chapter_12.html" 
+target="_blank">странице</a></b> показано как происходит проверка корректности 
+построения многогранников у которых рундист не является выпуклым. К таким многогранникам
+относятся <em>цветок</em>, <em>супермультифасет</em> и <em>сердце</em>.
+</p>
+<p>
+Во всех программах (<em><b>но начиная со следующего раздела</b></em>) в панели <b>GUI</b> появится 
+поле <b>correct</b> которое позволит включать и выключать проверку выпуклости модели
+многогранника в пределах диапазона изменения параметров. 
+</p>
+
+<p>
+В <a href="../Octagon/Octagon3.html"><b>следующем разделе</b></a> мы добавим имитацию освещения модели.
+</p>
+
+</body>
+</html>

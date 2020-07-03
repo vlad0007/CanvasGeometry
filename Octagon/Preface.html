@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<title>Preface</title>
+	<link rel="stylesheet" type="text/css" href="../libs/style.css">
+	<script src="../libs/run_prettify.js?autoload=true&amp;lang=css" defer=""></script>
+	<script src="../libs/WebGeometry.js"></script>
+	<script src="../libs/canvas2D.js"></script>
+	<script src = "../libs/polyhedron_canvas.js"></script>
+	<script src = "octagon_verts.js"></script>
+	<script src="octagon1.js"></script>
+
+	<style>
+		div.out
+		{
+			position: relative;
+			width: 510px;
+			height: 412px;
+			left: 20px;
+			background-color: #aaffff;
+			border: solid 2px;
+		}
+
+		div.canvas
+		{
+			position: absolute;
+			left: 5px;
+			top: 5px;			
+			height: 400px;
+			width: 500px;
+			background-color: #fcffff;
+			border: solid 0px;		
+		}
+	</style>
+
+<script>
+
+	var DEGREE = 0.01745329251994;
+	var xC, yC, SCALE;
+		
+	function initiate()		
+	{
+		octagon();
+	}
+	
+addEventListener("load", initiate);
+</script>
+
+</head>
+
+<body>
+
+<h4 align = "center">&emsp;&emsp;
+<a href="../index.html"> <span class=purple> Содержание  </span></a>
+&emsp;&emsp;&emsp;
+ <span class=purple>► &ensp;</span></a><a href="../DrawGeometry/DrawGeometry.html"> 
+ <span class=purple>Черчение на холсте при помощи библиотеки canvas2D</span></a>
+</h4>
+
+<br>
+<br>
+<br>
+
+<h2 align = "center"> Введение</h2>
+
+<p>
+Данный сайт можно считать продолжением (или дополнением) моего другого сайта 
+<a href="https://vlad0007.github.io/polyhedron1/index.html" target="_blank">Three.js и геометрия</a>.
+На сайте "<b>Three.js и геометрия</b>" было рассмотрено создание шестнадцати моделей огранок
+алмазов. В качестве инструмента для вывода изображений на экран была использована библиотека <b>ThreeJS</b>.
+На новом сайте, который я назвал "<b>Canvas и геометрия</b>" для этой цели
+используется <b>HTML5 Canvas</b> без каких либо библиотек построенных
+на основе <b>WebGL</b> (таких как <b>ThreeJS</b> или <b>BabylonJS</b>). Однако все, что было сделано на сайте
+"<b>Three.js и геометрия</b>" в плане отрисовки модели, нумерации вершин, задания значений параметров,
+выбора граней многогранников и т.д. мне удалось сохранить и на новом сайте.
+Кроме того было добавлено несколько новых возможностей. Например сделана имитация освещения моделей. 
+</p>
+
+<p>
+При создании <em>online</em>-программ находящихся на сайте использовались самые простые конструкции языка <b>JavaScript</b>.
+Но для понимания работы этих программ требуется некоторый опыт в использовании обработчиков событий мыши возникающих
+при ее движении по холсту и при нажатии ее клавиш.
+</p>
+
+<p>
+Все <em>online</em>-программы сделаны максимально интерактивными. Например, при помощи мыши можно не только выбрать
+любую грань, но также посмотреть значения координат модели в любой ее точке.
+При желании можно выключать/включать проверку корректности построения модели,
+менять цвет освещения и его яркость, а также производить другие манипуляции с <b>3D</b>-моделями многогранников.
+</p>
+<p>
+Для отрисовки моделей и нанесения их размеров на холст была сделана библиотека
+<a href="../libs/Canvas2d_Reference.html"  target="_blank"> <b>canvas2D</b></a>,  
+которая фактически представляет собой небольшую обертку вокруг функций <b>HTML5 Canvas</b>.
+При этом функции входящие в библиотеку <b>canvas2D</b> сделаны таким образом, чтобы их было
+максимально удобно использовать совместно с функциями входящими в состав библиотеки 
+<a href="https://vlad0007.github.io/polyhedron1/libs/Help.html"  target="_blank">WebGeometry</b></a>,
+предназначенной для геометрических расчетов на плоскости и в пространстве. 
+</p>
+</body>
+</html>
